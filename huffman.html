@@ -1,0 +1,1445 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Huffman Coding System</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f3f6fb;
+    color: #222;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    color: #243b64;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+h2 {
+    color: #243b64;
+    margin-bottom: 18px;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    resize: none;
+    font-size: 16px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    background: #243b64;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #182a48;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 11px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background: #eef2f8;
+}
+
+.result {
+    background: #f7f9fc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 12px;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 18px;
+}
+
+.tree {
+    background: #fafafa;
+    padding: 25px;
+    border-radius: 10px;
+    overflow-x: auto;
+    white-space: pre;
+    font-family: monospace;
+    line-height: 1.7;
+}
+
+.mapping {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mapping span {
+    background: #eef2f8;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: monospace;
+}
+
+.flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.box {
+    background: #eef2f8;
+    padding: 15px 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.box span {
+    display: block;
+    margin-top: 8px;
+    font-family: monospace;
+    font-weight: normal;
+    word-break: break-all;
+}
+
+.arrow {
+    font-size: 25px;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.success {
+    color: green;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.info {
+    margin-top: 10px;
+    color: #555;
+}
+
+.decode-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #eef8f0;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>Huffman Coding System</h1>
+
+<p class="subtitle">
+    Text → Huffman Code → 3-Bit Dummy Code → Original Text
+</p>
+
+
+<!-- ================================================= -->
+<!-- ENCODE SECTION -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>1. Encode</h2>
+
+<p class="info">
+Enter the original text and generate its Huffman code.
+</p>
+
+<br>
+
+<textarea
+    id="inputText"
+    placeholder="Example: HELLO">
+</textarea>
+
+<button onclick="encodeText()">
+    Generate Huffman Code
+</button>
+
+<p id="encodeError" class="error"></p>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- FREQUENCY -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>2. Character Frequency</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Character</th>
+<th>Frequency</th>
+</tr>
+
+</thead>
+
+<tbody id="frequencyBody"></tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- HUFFMAN TREE -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>3. Huffman Tree</h2>
+
+<div
+    id="tree"
+    class="tree">
+    
+Generate the Huffman Tree first.
+
+</div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- HUFFMAN CODES -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>4. Huffman Codes</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Character</th>
+<th>Huffman Code</th>
+</tr>
+
+</thead>
+
+<tbody id="codeBody"></tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- ENCODE FLOW -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>5. Encoding Process</h2>
+
+<div class="flow">
+
+
+<div class="box">
+
+Original Text
+
+<span id="originalText">
+---
+</span>
+
+</div>
+
+
+<div class="arrow">
+→
+</div>
+
+
+<div class="box">
+
+Huffman Binary
+
+<span id="binaryCode">
+---
+</span>
+
+</div>
+
+
+<div class="arrow">
+→
+</div>
+
+
+<div class="box">
+
+3-Bit Groups
+
+<span id="threeBit">
+---
+</span>
+
+</div>
+
+
+<div class="arrow">
+→
+</div>
+
+
+<div class="box">
+
+Dummy Code
+
+<span id="dummyCode">
+---
+</span>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- MAPPING -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>6. 3-Bit Dummy Mapping</h2>
+
+<div class="mapping">
+
+<span>000 → A</span>
+<span>001 → B</span>
+<span>010 → C</span>
+<span>011 → D</span>
+<span>100 → E</span>
+<span>101 → F</span>
+<span>110 → G</span>
+<span>111 → H</span>
+
+</div>
+
+<p
+    id="paddingInfo"
+    class="info">
+</p>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- DECIMAL -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>7. Decimal Representation</h2>
+
+<div
+    id="decimalCode"
+    class="result">
+
+---
+
+</div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- DECODE SECTION -->
+<!-- ================================================= -->
+
+
+<div class="card">
+
+<h2>8. Decode Dummy Code</h2>
+
+<p class="info">
+
+Copy the Dummy Code generated above and enter it here.
+
+</p>
+
+<br>
+
+
+<input
+    type="text"
+    id="dummyInput"
+    placeholder="Example: GHBA">
+
+
+<br>
+
+
+<label>
+
+<strong>
+Padding Bits:
+</strong>
+
+</label>
+
+
+<input
+    type="number"
+    id="paddingInput"
+    min="0"
+    max="2"
+    value="0"
+    placeholder="0, 1 or 2">
+
+
+<button onclick="decodeDummy()">
+    Decode Dummy Code
+</button>
+
+
+<p
+    id="decodeError"
+    class="error">
+</p>
+
+
+<div
+    id="decodeBinary"
+    class="result">
+
+Decoded Binary: ---
+
+</div>
+
+
+<div
+    id="originalResult"
+    class="decode-result">
+
+Original Text: ---
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+// =================================================
+// GLOBAL VARIABLES
+// =================================================
+
+
+let root = null;
+
+let huffmanCodes = {};
+
+let originalBinary = "";
+
+let paddingBits = 0;
+
+
+
+// =================================================
+// HUFFMAN NODE
+// =================================================
+
+
+class Node {
+
+    constructor(
+        char,
+        frequency,
+        left = null,
+        right = null
+    ) {
+
+        this.char = char;
+
+        this.frequency = frequency;
+
+        this.left = left;
+
+        this.right = right;
+
+    }
+
+}
+
+
+
+// =================================================
+// FREQUENCY
+// =================================================
+
+
+function getFrequency(text) {
+
+    let frequency = {};
+
+    for (let char of text) {
+
+        if (frequency[char]) {
+
+            frequency[char]++;
+
+        }
+
+        else {
+
+            frequency[char] = 1;
+
+        }
+
+    }
+
+    return frequency;
+
+}
+
+
+
+// =================================================
+// BUILD HUFFMAN TREE
+// =================================================
+
+
+function buildHuffmanTree(frequency) {
+
+    let nodes = [];
+
+
+    for (let char in frequency) {
+
+        nodes.push(
+
+            new Node(
+                char,
+                frequency[char]
+            )
+
+        );
+
+    }
+
+
+    // Only one unique character
+
+    if (nodes.length === 1) {
+
+        return new Node(
+            null,
+            nodes[0].frequency,
+            nodes[0],
+            null
+        );
+
+    }
+
+
+    while (nodes.length > 1) {
+
+        // Sort according to frequency
+
+        nodes.sort(
+
+            (a, b) =>
+            a.frequency -
+            b.frequency
+
+        );
+
+
+        let left =
+            nodes.shift();
+
+
+        let right =
+            nodes.shift();
+
+
+        let parent =
+            new Node(
+
+                null,
+
+                left.frequency +
+                right.frequency,
+
+                left,
+
+                right
+
+            );
+
+
+        nodes.push(parent);
+
+    }
+
+
+    return nodes[0];
+
+}
+
+
+
+// =================================================
+// GENERATE HUFFMAN CODES
+// =================================================
+
+
+function generateCodes(
+    node,
+    code = ""
+) {
+
+    if (!node) return;
+
+
+    if (node.char !== null) {
+
+        huffmanCodes[node.char] =
+            code === ""
+            ? "0"
+            : code;
+
+        return;
+
+    }
+
+
+    generateCodes(
+        node.left,
+        code + "0"
+    );
+
+
+    generateCodes(
+        node.right,
+        code + "1"
+    );
+
+}
+
+
+
+// =================================================
+// ENCODE
+// =================================================
+
+
+function encodeText() {
+
+
+    let text =
+        document.getElementById(
+            "inputText"
+        ).value;
+
+
+    let error =
+        document.getElementById(
+            "encodeError"
+        );
+
+
+    if (text.length === 0) {
+
+        error.innerText =
+            "Please enter some text.";
+
+        return;
+
+    }
+
+
+    error.innerText = "";
+
+
+    // -----------------------------------------
+    // FREQUENCY
+    // -----------------------------------------
+
+
+    let frequency =
+        getFrequency(text);
+
+
+    showFrequency(frequency);
+
+
+
+    // -----------------------------------------
+    // TREE
+    // -----------------------------------------
+
+
+    root =
+        buildHuffmanTree(
+            frequency
+        );
+
+
+    huffmanCodes = {};
+
+
+    generateCodes(root);
+
+
+    showCodes();
+
+
+
+    // -----------------------------------------
+    // HUFFMAN BINARY
+    // -----------------------------------------
+
+
+    originalBinary = "";
+
+
+    for (let char of text) {
+
+        originalBinary +=
+            huffmanCodes[char];
+
+    }
+
+
+
+    // -----------------------------------------
+    // 3-BIT PADDING
+    // -----------------------------------------
+
+
+    paddingBits =
+        (3 -
+        (originalBinary.length % 3))
+        % 3;
+
+
+    let paddedBinary =
+        originalBinary;
+
+
+    for (
+        let i = 0;
+        i < paddingBits;
+        i++
+    ) {
+
+        paddedBinary += "0";
+
+    }
+
+
+
+    // -----------------------------------------
+    // 3-BIT GROUPS
+    // -----------------------------------------
+
+
+    let groups = [];
+
+
+    for (
+        let i = 0;
+        i < paddedBinary.length;
+        i += 3
+    ) {
+
+        groups.push(
+
+            paddedBinary.substring(
+                i,
+                i + 3
+            )
+
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // MAPPING
+    // -----------------------------------------
+
+
+    const mapping = {
+
+        "000": "A",
+        "001": "B",
+        "010": "C",
+        "011": "D",
+        "100": "E",
+        "101": "F",
+        "110": "G",
+        "111": "H"
+
+    };
+
+
+    let dummy = "";
+
+
+    for (let group of groups) {
+
+        dummy +=
+            mapping[group];
+
+    }
+
+
+
+    // -----------------------------------------
+    // DISPLAY
+    // -----------------------------------------
+
+
+    document.getElementById(
+        "originalText"
+    ).innerText =
+        text;
+
+
+    document.getElementById(
+        "binaryCode"
+    ).innerText =
+        originalBinary;
+
+
+    document.getElementById(
+        "threeBit"
+    ).innerText =
+        groups.join(" | ");
+
+
+    document.getElementById(
+        "dummyCode"
+    ).innerText =
+        dummy;
+
+
+    document.getElementById(
+        "paddingInfo"
+    ).innerText =
+
+        "Padding bits added: "
+        + paddingBits;
+
+
+
+    // -----------------------------------------
+    // DECIMAL
+    // -----------------------------------------
+
+
+    let decimalValue =
+        BigInt(
+            "0b" +
+            originalBinary
+        );
+
+
+    document.getElementById(
+        "decimalCode"
+    ).innerText =
+        decimalValue.toString();
+
+
+
+    // -----------------------------------------
+    // TREE
+    // -----------------------------------------
+
+
+    document.getElementById(
+        "tree"
+    ).innerText =
+        createTreeText(root);
+
+
+
+    // Automatically put dummy code
+    // inside Decode input
+
+    document.getElementById(
+        "dummyInput"
+    ).value =
+        dummy;
+
+
+    document.getElementById(
+        "paddingInput"
+    ).value =
+        paddingBits;
+
+}
+
+
+
+// =================================================
+// SHOW FREQUENCY
+// =================================================
+
+
+function showFrequency(
+    frequency
+) {
+
+    let body =
+        document.getElementById(
+            "frequencyBody"
+        );
+
+
+    body.innerHTML = "";
+
+
+    for (let char in frequency) {
+
+        let row =
+            document.createElement(
+                "tr"
+            );
+
+
+        let character =
+            char === " "
+            ? "[SPACE]"
+            : char;
+
+
+        row.innerHTML = `
+
+            <td>
+                ${character}
+            </td>
+
+            <td>
+                ${frequency[char]}
+            </td>
+
+        `;
+
+
+        body.appendChild(row);
+
+    }
+
+}
+
+
+
+// =================================================
+// SHOW HUFFMAN CODES
+// =================================================
+
+
+function showCodes() {
+
+    let body =
+        document.getElementById(
+            "codeBody"
+        );
+
+
+    body.innerHTML = "";
+
+
+    for (
+        let char in huffmanCodes
+    ) {
+
+        let row =
+            document.createElement(
+                "tr"
+            );
+
+
+        let character =
+            char === " "
+            ? "[SPACE]"
+            : char;
+
+
+        row.innerHTML = `
+
+            <td>
+                ${character}
+            </td>
+
+            <td>
+                ${huffmanCodes[char]}
+            </td>
+
+        `;
+
+
+        body.appendChild(row);
+
+    }
+
+}
+
+
+
+// =================================================
+// TREE TEXT
+// =================================================
+
+
+function createTreeText(
+    node,
+    prefix = "",
+    branch = ""
+) {
+
+    if (!node) return "";
+
+
+    let result = "";
+
+
+    if (node.char !== null) {
+
+        let character =
+            node.char === " "
+            ? "SPACE"
+            : node.char;
+
+
+        result +=
+
+            prefix +
+            branch +
+            "[" +
+            character +
+            " : " +
+            node.frequency +
+            "]\n";
+
+    }
+
+    else {
+
+        result +=
+
+            prefix +
+            branch +
+            "(" +
+            node.frequency +
+            ")\n";
+
+
+        result +=
+
+            createTreeText(
+                node.left,
+                prefix + "   ",
+                "0 → "
+            );
+
+
+        result +=
+
+            createTreeText(
+                node.right,
+                prefix + "   ",
+                "1 → "
+            );
+
+    }
+
+
+    return result;
+
+}
+
+
+
+// =================================================
+// DECODE DUMMY CODE
+// =================================================
+
+
+function decodeDummy() {
+
+
+    let dummy =
+        document.getElementById(
+            "dummyInput"
+        ).value
+        .trim()
+        .toUpperCase();
+
+
+    let error =
+        document.getElementById(
+            "decodeError"
+        );
+
+
+    error.innerText = "";
+
+
+    // -----------------------------------------
+    // CHECK TREE
+    // -----------------------------------------
+
+
+    if (!root) {
+
+        error.innerText =
+            "Please generate Huffman code first.";
+
+        return;
+
+    }
+
+
+    // -----------------------------------------
+    // CHECK DUMMY
+    // -----------------------------------------
+
+
+    if (dummy.length === 0) {
+
+        error.innerText =
+            "Please enter a Dummy Code.";
+
+        return;
+
+    }
+
+
+    // -----------------------------------------
+    // CHECK VALID CHARACTERS
+    // -----------------------------------------
+
+
+    for (let char of dummy) {
+
+        if (
+            char !== "A" &&
+            char !== "B" &&
+            char !== "C" &&
+            char !== "D" &&
+            char !== "E" &&
+            char !== "F" &&
+            char !== "G" &&
+            char !== "H"
+        ) {
+
+            error.innerText =
+                "Invalid Dummy Code. Use only A-H.";
+
+            return;
+
+        }
+
+    }
+
+
+
+    // -----------------------------------------
+    // GET PADDING
+    // -----------------------------------------
+
+
+    let padding =
+        parseInt(
+            document.getElementById(
+                "paddingInput"
+            ).value
+        );
+
+
+    if (
+        isNaN(padding) ||
+        padding < 0 ||
+        padding > 2
+    ) {
+
+        error.innerText =
+            "Padding must be 0, 1 or 2.";
+
+        return;
+
+    }
+
+
+
+    // -----------------------------------------
+    // REVERSE MAPPING
+    // -----------------------------------------
+
+
+    const reverseMapping = {
+
+        "A": "000",
+        "B": "001",
+        "C": "010",
+        "D": "011",
+        "E": "100",
+        "F": "101",
+        "G": "110",
+        "H": "111"
+
+    };
+
+
+    let paddedBinary = "";
+
+
+    for (let char of dummy) {
+
+        paddedBinary +=
+            reverseMapping[char];
+
+    }
+
+
+
+    // -----------------------------------------
+    // REMOVE PADDING
+    // -----------------------------------------
+
+
+    if (
+        padding >
+        paddedBinary.length
+    ) {
+
+        error.innerText =
+            "Invalid padding.";
+
+        return;
+
+    }
+
+
+    let binary =
+        paddedBinary.substring(
+            0,
+            paddedBinary.length -
+            padding
+        );
+
+
+
+    // -----------------------------------------
+    // SHOW BINARY
+    // -----------------------------------------
+
+
+    document.getElementById(
+        "decodeBinary"
+    ).innerText =
+
+        "Decoded Binary: "
+        + binary;
+
+
+
+    // -----------------------------------------
+    // HUFFMAN DECODING
+    // -----------------------------------------
+
+
+    let current = root;
+
+    let result = "";
+
+
+    for (let bit of binary) {
+
+
+        if (bit === "0") {
+
+            current =
+                current.left;
+
+        }
+
+        else {
+
+            current =
+                current.right;
+
+        }
+
+
+        // Invalid path
+
+        if (!current) {
+
+            error.innerText =
+                "Invalid Dummy Code for this Huffman Tree.";
+
+            return;
+
+        }
+
+
+        // Character found
+
+        if (
+            current.char !== null
+        ) {
+
+            result +=
+                current.char;
+
+            current = root;
+
+        }
+
+    }
+
+
+
+    // -----------------------------------------
+    // CHECK COMPLETE TREE PATH
+    // -----------------------------------------
+
+
+    if (
+        current !== root
+    ) {
+
+        error.innerText =
+            "Invalid or incomplete Dummy Code.";
+
+        return;
+
+    }
+
+
+
+    // -----------------------------------------
+    // SHOW ORIGINAL TEXT
+    // -----------------------------------------
+
+
+    document.getElementById(
+        "originalResult"
+    ).innerText =
+
+        "Original Text: "
+        + result;
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
+```
